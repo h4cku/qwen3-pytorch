@@ -10,7 +10,7 @@ if __name__ == "__main__":
     print(f"Device: {DEVICE}  |  Model: {MODEL_ID}")
 
     model, local_dir = load_model(model_path="./hf/model.safetensors", device=DEVICE)
-    enc = Tokenizer.from_file("./hf/tokenizer.json")
+    enc = Tokenizer.from_file(str(local_dir / "tokenizer.json"))
 
     prompt = format_prompt(
         "What is the difference between a list and a tuple in Python?"

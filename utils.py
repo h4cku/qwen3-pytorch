@@ -88,7 +88,7 @@ def load_model(
 ) -> tuple[Qwen3, str]:
     if model_path is not None:
         hf_state = load_file(model_path)
-        local_dir = Path("./hf")
+        local_dir = Path(model_path).parent
     else:
         from huggingface_hub import snapshot_download
 
@@ -115,10 +115,20 @@ def load_model(
     if not missing and not unexpected:
         print("✓ All weights loaded cleanly.")
 
-    return model.to(device).eval(), local_dir
+    return model.to(device).eval(), Path(local_dir)
 
 
-def format_prompt(user_msg: str, system: str = "You are a helpful assistant.") -> str:
+def format_prompt(
+    user_msg: str, system: str = "You are a helpful assistant.", reasoning=False
+) -> str:
+    if not reasoning:
+        return (
+            f"/no_think\n"
+            f"<|im_start|>system\n{system}<|im_end|>\n"
+            f"<|im_start|>user\n{user_msg}<|im_end|>\n"
+            f"<|im_start|>assistant\n"
+            f"/no_think\n"
+        )
     return (
         f"<|im_start|>system\n{system}<|im_end|>\n"
         f"<|im_start|>user\n{user_msg}<|im_end|>\n"
